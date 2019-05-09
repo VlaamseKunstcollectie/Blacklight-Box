@@ -1,0 +1,12 @@
+# This is inventory file for development stage
+
+# Copy or rename this file from blacklight.default to blacklight
+# Change the path-to-machine and let it point to the folder that contains your
+# blacklight-Box instance (i.e. /Users/john/Machines/blacklight-Box)
+
+[blacklight]
+192.168.2.152 ansible_ssh_user='vagrant' ansible_ssh_private_key_file='/path-to-machine/.vagrant/machines/blacklight.box/virtualbox/private_key'
+
+[localhost]
+localhost ansible_connection=local
+

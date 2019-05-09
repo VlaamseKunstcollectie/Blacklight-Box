@@ -1,0 +1,11 @@
+.vagrant
+config.yml
+**/*.retry
+packer/packer_cache
+packer/build/*.box
+output-virtualbox-iso
+output-vmware-iso
+ansible/roles/external/*
+ansible/blacklight
+demo
+.DS_Store

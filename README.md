@@ -1,0 +1,202 @@
+# Blacklight Box (Vagrant, Packer and Ansible)
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+
+This project builds and configures a virtual image containing the necessary
+dependencies for developing, deploying and managing [thedatahub/datahub](github.com/thedatahub/datahub)
+and [projectblacklight/blacklight](https://github.com/projectblacklight/blacklight)
+on a local or remote hosts. It also includes an installation of [ResourceSpace](https://www.resourcespace.com/), a Digital Asset Manager (DAM) that allows you to upload, manage, and expose digital image files.
+
+This is currently a development repository geared towards developing an blacklight, with the following goals:
+
+1. getting images from a file system imported into resourcespace automatically, with correct extraction of embedded metadata
+2. setting up a IIIF image API using a Cantaloupe IIIF image server that extracts images from the Resourcespace API.
+3. the creation of an [blacklight](https://github.com/VlaamseKunstcollectie/blacklight), a platform similar to Datahub that extracts and combines metadata from:
+  - the ResourceSpace API
+  - The Cantaloupe IIIF image server info.json files
+  - the Datahub<br/>converting that metadata into IIIF manifest.json files, presenting those using a IIIF Presentation API.
+4. further developing the [Arthub](https://github.com/VlaamseKunstcollectie/Arthub-blacklight) to show image files associated with cultural heritage records using the [Universal Viewer](http://universalviewer.io).   
+
+Development of the blacklight should happen in the [blacklight](https://github.com/VlaamseKunstcollectie/blacklight) repo, development of the Arthub should happen in the [blacklight-Arthub repo](https://github.com/VlaamseKunstcollectie/Arthub-blacklight). 
+
+
+You'll get an [Ubuntu 16.04.5 Server (AMD 64)](old-releases.ubuntu.com/releases/trusty/)
+box ready for use with [Vagrant](https://www.vagrantup.com/). This box is
+provisioned with [Ansible](https://www.ansible.com/).
+
+Provisioning from scratch can take a while, so [Packer](http://www.packer.io/)
+support is included to generate a provisioned base box which you can reuse each
+time you destroy an instance.
+
+## Requirements
+
+The following software must be installed/present on your local machine before
+you can use Packer to build the Vagrant box file:
+
+  - [Packer](http://www.packer.io/)
+  - [Vagrant](http://vagrantup.com/)
+  - [VirtualBox](https://www.virtualbox.org/) (if you want to build the
+    VirtualBox box)
+  - [VMware Fusion](http://www.vmware.com/products/fusion/) (or Workstation - if
+    you want to build the VMware box)
+  - [Ansible](http://docs.ansible.com/intro_installation.html)
+
+## How to use
+
+Then copy or rename the `blacklight.default` file which contains the Ansible 
+configuration file:
+
+```bash
+$ cp ./ansible/blacklight.default ./ansible/blacklight
+```
+
+Change the `path-to-machine` string in the inventory configuration and let it
+point to the directory that contains the blacklight-Box installation i.e:
+
+```
+ansible_ssh_private_key_file='/Users/John/Machines/My-Box/.vagrant/machines/blacklight.box/virtualbox/private_key'
+```
+
+Next, make sure you have all the required software (listed above) before is installed,
+then cd into the `ansible/extension/setup` directory and run:
+
+```bash
+$ sh role_update.sh
+```
+
+This script will pull down a set of external ansible roles created and
+maintained by other authors. These are installed in the `ansible/roles/external`
+directory. Then cd into the `packer` directory and run:
+
+```bash
+$ packer build blacklight.json
+```
+
+After a few minutes, Packer should tell you the box was generated succesfully.
+You'll find the box file in the `packer/build` directory.
+
+If you want to only build a box for one of the supported virtualization
+platforms (e.g. only build the Virtualbox box), add --only=virtualbox-iso to   
+the packer build command:
+
+```bash
+$ packer build --only=virtualbox-iso blacklight.json
+```
+
+## Using built boxes
+
+### Configuration
+
+Copy the `default.config.yml` file to `config.yml`. 
+
+```bash
+$ cp default.config.yml config.yml
+```
+
+Change the variables in the configuration file for your particular setup. You should download a copy of the [datahub](https://github.com/thedatahub/datahub), the [arthub](https://github.com/VlaamseKunstcollectie/Arthub-blacklight), project blacklight, and [resourcespace](https://www.resourcespace.com/get) into the folder you wish to make your shared folder with vagrant. 
+Make sure you point the `vagrant_synced_folders` to the directory on the host 
+machine where you installed both an instance of the datahub and Project 
+Blacklight. If your setup looks like this:
+
+```bash
+$ cd ~/Projects
+$ ls -lah
+drwxr-xr-x  12 user  staff   408B Oct 24 11:09 .
+drwxr-xr-x  58 user  staff   1.9K Dec  2 16:50 ..
+drwxr-xr-x  20 user  staff   680B Dec  6 14:05 datahub
+drwxr-xr-x  27 user  staff   918B Oct 24 15:59 project-blacklight
+drwxr-xr-x 22  user  staff   704B Apr 12 15:39 resourcespace
+```
+
+the YAML configuration should look like this:
+
+```bash
+vagrant_synced_folders:
+  # The first synced folder will be used for the default Datahub installation, if
+  # any of the build_* settings are 'true'. By default the folder is set to
+  # the datahub folder.
+  - local_path: /Users/username/Projects
+    destination: /vagrant
+    type: nfs
+create: true
+```
+
+Note: if you change the name of the `datahub`, `project-blacklight`, and `resourcespace` folders, 
+you will have to update the variables in `ansible/group_vars/all/nginx.yml` as 
+well and run the `ansible-playbook` command to update the box with the new 
+settings.
+
+### Using the box
+
+After updating the `config.yml` file, run the following command.
+
+```bash
+$ vagrant up
+```
+
+Vagrant will automatically update your `/etc/hosts` file with the correct 
+entries. If this hasn't happened, append these lines to your `/etc/hosts` file:
+
+```bash
+192.168.1.152   datahub.box      # http://datahub.box
+192.168.1.152   blacklight.box   # http://blacklight.box
+192.168.1.152   resourcespace.box   # http://resourcespace.box
+```
+
+Access:
+
+| URL                         |  Destination                       |
+| --------------------------- |  --------------------------------- |
+|  http://datahub.box         |  Your datahub instance             |
+|  http://resourcespace.box   |  Your resourcespace instance       |
+|  http://blacklight.box      |  Your Project Blacklight instance  |
+|  http://blacklight.box:3000 |  Direct access to Rails server     |
+|  http://blacklight.box:8983 |  Direct access to Solr             |
+
+Alternatively, you can just run the Ansible playbook after altering the included
+inventory file. This ables developers to deploy a fully fledged environment to
+a remote host.
+
+## Contents
+
+The Datahub box provides you with a fully fledged environment in which you can
+deploy an instance of [thedatahub/datahub](github.com/thedatahub/datahub) and
+(optional) an instance of [projectblacklight/blacklight](https://github.com/projectblacklight/blacklight). 
+
+To get Resourcespace up and running, you'll need to:
+- download [resourcespace](https://www.resourcespace.com/get).
+- Put the download in your shared vagrant folder that you specified in the 'vagrant_synced_folders' variable in config.yml (cfr "Configuration"). 
+- once your vagrant box is up and running, create an empty mysql database called 'resourcespace':
+  - in the directory of your box installation, run `vagrant ssh`
+  - while logged in to your box, log in to mysql with `mysql -u root -p`
+  - enter the mysql password, which by default should be `root``
+  - create a new database called resourcespace with `create database resourcespace;` (don't forget the trailing semicolon!)
+  - exit out of mysql with `exit`
+- you should now be able to surf to resourcespace.box and configure your resourcespace installation. Don't forget to keep the admin user and password you create during this configuration somewhere safe! you'll have to reinstall your instance of resourcespace if you lose it. 
+
+This box contains Ubuntu 14.04.1 Server (AMD 64) with these packages:
+
+* Git
+* PHP-FPM 7 (with mongdb extension)
+* Ruby 2.5.3 via rvm (with rails and bundler)
+* Oracle Java 8
+* Nginx
+* MongoDB 3.6
+* Rails 5.0.0
+
+## Credits
+
+
+## Authors
+
+* Matthias Vandermaesen <matthias.vandermaesen@vlaamsekunstcollectie.be>
+
+## Copyright
+
+Copyright 2016 - PACKED vzw, Vlaamse Kunstcollectie vzw
+
+## License
+
+This library is free software; you can redistribute it and/or modify it under
+the terms of the GPLv3.
+
