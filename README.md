@@ -3,12 +3,9 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 This project builds and configures a virtual image containing the necessary
-dependencies for developing, deploying and managing [projectblacklight/blacklight](https://github.com/projectblacklight/blacklight)
-on a local or remote hosts
+dependencies for developing, deploying and managing [projectblacklight/blacklight](https://github.com/projectblacklight/blacklight) on a local or remote hosts
 .
-You'll get an [Ubuntu 16.04.5 Server (AMD 64)](old-releases.ubuntu.com/releases/trusty/)
-box ready for use with [Vagrant](https://www.vagrantup.com/). This box is
-provisioned with [Ansible](https://www.ansible.com/).
+You'll get an [Ubuntu 16.04.6 Server (386i)](http://releases.ubuntu.com/16.04/ubuntu-16.04.6-server-i386.iso) box ready for use with [Vagrant](https://www.vagrantup.com/). This box is provisioned with [Ansible](https://www.ansible.com/).
 
 Provisioning from scratch can take a while, so [Packer](http://www.packer.io/)
 support is included to generate a provisioned base box which you can reuse each
@@ -118,7 +115,7 @@ Vagrant will automatically update your `/etc/hosts` file with the correct
 entries. If this hasn't happened, append these lines to your `/etc/hosts` file:
 
 ```bash
-192.168.1.152   blacklight.box   # http://blacklight.box
+192.168.2.160   blacklight.box   # http://blacklight.box
 ```
 
 Access:
