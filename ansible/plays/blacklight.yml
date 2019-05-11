@@ -25,4 +25,6 @@
     - { role: geerlingguy.git,                       tags: [ "git" ] }
     - { role: geerlingguy.nginx,                     tags: [ "nginx" ] }
     - { role: geerlingguy.java,                      tags: [ "java" ] }
+    - { role: blacklight.perl,                       tags: [ "perl" ] }
+    - { role: blacklight.node,                       tags: [ "node"] }
     - { role: rvm.ruby,                              tags: [ "ruby" ] }
