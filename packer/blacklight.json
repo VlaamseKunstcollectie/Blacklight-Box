@@ -19,6 +19,8 @@
         "../ansible/roles/external/geerlingguy.git",
         "../ansible/roles/external/geerlingguy.nginx",
         "../ansible/roles/external/geerlingguy.java",
+        "../ansible/roles/internal/blacklight.perl",
+        "../ansible/roles/internal/blacklight.node",
         "../ansible/roles/external/rvm.ruby"
       ]
     },
