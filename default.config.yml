@@ -1,7 +1,9 @@
 ---
 
-vagrant_box: blacklight-xenial32
-vagrant_box_url: file://packer/build/blacklight-xenial32.box
+# vagrant_box: blacklight-xenial32
+# vagrant_box_url: file://packer/build/blacklight-xenial32.box
+
+vagrant_box: vlaamsekunstcollectie/projectblacklight
 
 vagrant_user: vagrant
 vagrant_synced_folder_default_type: nfs
