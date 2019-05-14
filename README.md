@@ -19,8 +19,7 @@ The following software must be installed/present on your local machine before
 you can use Packer to build the Vagrant box file:
 
   - [Vagrant](http://vagrantup.com/)
-  - [VirtualBox](https://www.virtualbox.org/) (if you want to build the
-    VirtualBox box)
+  - [VirtualBox](https://www.virtualbox.org/)
   - [Packer](http://www.packer.io/) (optional)
   - [Ansible](http://docs.ansible.com/intro_installation.html) (optional)
 
